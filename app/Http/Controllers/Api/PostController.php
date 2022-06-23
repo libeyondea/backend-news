@@ -29,11 +29,12 @@ class PostController extends Controller
         if ($request->has('category')) {
             $posts = $posts->whereHas('category', function ($q) use ($request) {
                 $descendantCategory = Category::where('slug', $request->category)->first();
-                $q->wherein('id', Category::descendantsAndSelf($descendantCategory->id)->pluck('id'));
+                /*  $q->wherein('id',Category::descendantsAndSelf($descendantCategory->id)->pluck('id'));  */
+                $q->where('id', $descendantCategory->id);
             });
         }
         $postsCount = $posts->get()->count();
-        $posts = $posts->pagination();
+        $posts = $posts->paginate();
         return $this->respondSuccessWithPagination(new PostCollection($posts), $postsCount);
     }
     public function show($slug)
